@@ -7,7 +7,7 @@ require('dotenv').config()
 // middlewire
 app.use(cors())
 app.use(express.json())
-
+const jwt = require('jsonwebtoken');
 
 
 
@@ -30,7 +30,13 @@ async function run() {
     await client.connect();
 
     const homeCollection = client.db("assignment12").collection("homeDB");
-    const userCollection = client.db('assignment12').collection('users')
+    const userCollection = client.db('assignment12').collection('users');
+
+    app.post('/jwt', (req,res) =>{
+      const user = req.body;
+      const token  = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {expiresIn: '24h'})
+      res.send({ token })
+    })
     app.get('/home', async(req, res) =>{
         const result = await homeCollection.find().toArray()
         res.send(result)
