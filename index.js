@@ -10,7 +10,20 @@ app.use(express.json())
 const jwt = require('jsonwebtoken');
 
 
-
+const verifyJWT = (req, res, next)=>{
+  const authorization = req.headers.authorization;
+  if(!authorization){
+    return res.status(401).send({error: true, message: 'unauthorized access'})
+  }
+  const token = authorization.split(' ')[1];
+  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) =>{
+    if(err){
+      return res.status(401).send({error: true, message: 'unauthorized access'})
+    }
+    req.decoded = decoded;
+    next();
+  })
+}
 
 const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 const uri = `mongodb+srv://${process.env.SECRET_USER}:${process.env.SECRET_PASS}@cluster0.wcry9bp.mongodb.net/?retryWrites=true&w=majority`;
@@ -61,12 +74,51 @@ async function run() {
       res.send(result)
     })
 
+// admin
+app.get('/users/admin/:email',verifyJWT, async(req, res)=>{
+  const email = req.params.email;
+  if(req.decoded.email !== email){
+    res.send({ admin: false})
+  }
+
+  const query = { email: email}
+  const user = await userCollection.findOne(query)
+  const result = { admin: user?.role === 'admin'}
+  res.send(result)
+})
+
     app.patch('/users/admin/:id', async(req,res)=>{
       const id = req.params.id;
       const filter = {_id: new ObjectId(id)}
       const updatedDoc = {
         $set: {
           role: 'admin'
+        },
+      };
+      const result = await userCollection.updateOne(filter,updatedDoc)
+      res.send(result)
+    })
+
+
+// instractor
+    app.get('/users/instractor/:email',verifyJWT, async(req, res)=>{
+      const email = req.params.email;
+      if(req.decoded.email !== email){
+        res.send({ instractor: false})
+      }
+    
+      const query = { email: email}
+      const user = await userCollection.findOne(query)
+      const result = { instractor: user?.role === 'instractor'}
+      res.send(result)
+    })
+
+    app.patch('/users/instractor/:id', async(req,res)=>{
+      const id = req.params.id;
+      const filter = {_id: new ObjectId(id)}
+      const updatedDoc = {
+        $set: {
+          role2: 'instractor'
         },
       };
       const result = await userCollection.updateOne(filter,updatedDoc)
