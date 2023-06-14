@@ -190,6 +190,29 @@ app.get('/users/admin/:email',verifyJWT, async(req, res)=>{
       res.send(result);
     })
 
+ // admin approved classes apis:
+    app.patch('/classes/:id', async (req, res) => {
+      const id = req.params.id;
+      const status = req.query.status;
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $set: {
+          status: status,
+        }
+      };
+      const result = await classesCollection.updateOne(filter, updateDoc);
+      res.send(result);
+    })
+    
+
+    // Delete my class
+    app.delete('/myClass/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await classesCollection.deleteOne(query);
+      res.send(result)
+    })
+
 
 
     // Send a ping to confirm a successful connection
@@ -414,28 +437,8 @@ app.listen(port, () =>{
 
 //     
 //   
-//     // admin approved classes apis:
-//     app.patch('/classes/:id', async (req, res) => {
-//       const id = req.params.id;
-//       const status = req.query.status;
-//       const filter = { _id: new ObjectId(id) };
-//       const updateDoc = {
-//         $set: {
-//           status: status,
-//         }
-//       };
-//       const result = await classesCollection.updateOne(filter, updateDoc);
-//       res.send(result);
-//     })
-
-//     // Delete my class
-//     app.delete('/myClass/:id', async (req, res) => {
-//       const id = req.params.id;
-//       const query = { _id: new ObjectId(id) };
-//       const result = await classesCollection.deleteOne(query);
-//       res.send(result)
-//     })
-
+//    
+//     
 //     // ok selected class get
 //     app.get('/selectClass', verifyJWT, async (req, res) => {
 //       const email = req.query.email;
