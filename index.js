@@ -181,13 +181,11 @@ app.get('/users/admin/:email',verifyJWT, async(req, res)=>{
     // Admin deny and send feedback instructor class findOne
     app.put('/addClasses/:id', async (req, res) => {
       const id = req.params.id;
-      const feedback = req.body.feedback; // Assuming the new seat value is provided in the request body
-
+      const feedback = req.body.feedback; 
       const filter = { _id: new ObjectId(id) };
       const updateDoc = {
-        $push: { feedback: feedback } // Push the new seat value to the "availableSeats" array field
+        $push: { feedback: feedback } 
       };
-
       const result = await classesCollection.updateOne(filter, updateDoc);
       res.send(result);
     })
