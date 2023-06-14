@@ -172,9 +172,23 @@ app.get('/users/admin/:email',verifyJWT, async(req, res)=>{
     // Home page popular class show get api routes
     app.get('/popularClass/:status', async (req, res) => {
       console.log(req.params.status);
-      // const query = { _id: }
       const limitClass = 6;
       const result = await classesCollection.find({ status: req.params.status }).sort({ student: -1 }).limit(limitClass).toArray();
+      res.send(result);
+    })
+
+
+    // Admin deny and send feedback instructor class findOne
+    app.put('/addClasses/:id', async (req, res) => {
+      const id = req.params.id;
+      const feedback = req.body.feedback; // Assuming the new seat value is provided in the request body
+
+      const filter = { _id: new ObjectId(id) };
+      const updateDoc = {
+        $push: { feedback: feedback } // Push the new seat value to the "availableSeats" array field
+      };
+
+      const result = await classesCollection.updateOne(filter, updateDoc);
       res.send(result);
     })
 
@@ -400,20 +414,7 @@ app.listen(port, () =>{
 
 // 
 
-//     // Admin deny and send feedback instructor class findOne
-//     app.put('/addClasses/:id', async (req, res) => {
-//       const id = req.params.id;
-//       const feedback = req.body.feedback; // Assuming the new seat value is provided in the request body
-
-//       const filter = { _id: new ObjectId(id) };
-//       const updateDoc = {
-//         $push: { feedback: feedback } // Push the new seat value to the "availableSeats" array field
-//       };
-
-//       const result = await classesCollection.updateOne(filter, updateDoc);
-//       res.send(result);
-//     })
-
+//     
 //   
 //     // admin approved classes apis:
 //     app.patch('/classes/:id', async (req, res) => {
