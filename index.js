@@ -162,7 +162,21 @@ app.get('/users/admin/:email',verifyJWT, async(req, res)=>{
       res.send(result);
     })
 
+      // home page Class and all Classes route this approve class show
+    app.get('/allApprovedClasses/:text', async (req, res) => {
+      const result = await classesCollection.find({ status: req.params.text }).toArray();
+      res.send(result);
 
+    })
+
+    // Home page popular class show get api routes
+    app.get('/popularClass/:status', async (req, res) => {
+      console.log(req.params.status);
+      // const query = { _id: }
+      const limitClass = 6;
+      const result = await classesCollection.find({ status: req.params.status }).sort({ student: -1 }).limit(limitClass).toArray();
+      res.send(result);
+    })
 
 
 
@@ -382,21 +396,9 @@ app.listen(port, () =>{
 
 
 
-//     // home page Class and all Classes route this approve class show
-//     app.get('/allApprovedClasses/:text', async (req, res) => {
-//       const result = await classesCollection.find({ status: req.params.text }).toArray();
-//       res.send(result);
+//   
 
-//     })
-
-//     // Home page popular class show get api routes
-//     app.get('/popularClass/:status', async (req, res) => {
-//       console.log(req.params.status);
-//       // const query = { _id: }
-//       const limitClass = 6;
-//       const result = await classesCollection.find({ status: req.params.status }).sort({ student: -1 }).limit(limitClass).toArray();
-//       res.send(result);
-//     })
+// 
 
 //     // Admin deny and send feedback instructor class findOne
 //     app.put('/addClasses/:id', async (req, res) => {
